@@ -1,0 +1,163 @@
+---
+title: Baixando todas as atividades
+author: "Fernando Náufel"
+date: now
+date-format: "DD/MM/YYYY HH:mm"
+lang: pt
+execute: 
+  echo: true
+  eval: true
+  warning: true
+  error: true
+  include: true
+
+format:
+  html:
+    toc: true  
+    toc-depth: 3
+    number-depth: 3
+    theme: 
+      - journal
+      - _custom.scss
+    link-external-icon: true
+    link-external-newwindow: true
+    link-external-filter: ^(?:http:|https:)\/\/fnaufel\.github\.io
+    df-print: paged
+    code-link: true
+    code-copy: true
+    code-tools: true
+    self-contained: true
+---
+
+```{r setup, include=FALSE}
+source('_setup.R')
+library(rStrava)
+source('functions.R')
+```
+
+
+# Ler lista de atividades de arquivo (se houver)
+
+```{r}
+nome_arquivo <- 'atividades.csv'
+df_atividades <- ler_arquivo_atividades(nome_arquivo)
+after <- df_atividades %>% 
+    data_hora_ultima_atividade()
+```
+
+
+# Baixar lista com novas atividades
+
+```{r}
+stoken <- autenticar()
+```
+
+```{r}
+#| eval: false
+df_novas_atividades <- 
+  baixar_atividades(stoken, after) %>% 
+  limpar_df_atividades()
+
+df_atividades <- df_atividades %>% 
+  bind_rows(df_novas_atividades)
+```
+
+
+# Gravar lista de atividades em arquivo
+
+```{r}
+#| eval: false
+gravar_atividades(df_atividades, nome_arquivo)
+```
+
+
+# Baixar streams de uma atividade
+
+```{r}
+df_uma <- baixar_streams_uma_atividade(
+  stoken,
+  "15242452054"
+)
+```
+
+
+```{r}
+df_ultima <- baixar_streams_uma_atividade(
+  stoken,
+  df_atividades %>% slice_tail(n = 1) %>% pull(id)
+)
+
+df_ultima
+```
+
+# Baixar streams de diversas atividades
+
+Depois de ter modificado o df retornado por `compile_activities`, não posoo usar `get_activity_streams`:
+
+```{r}
+sf <- get_activity_streams(
+  df_atividades,
+  stoken,
+  id = c(
+    '15104556239',
+    '15104556190',
+    '15104556209',
+    '15212619105',
+    '15242452054'
+  ),
+  types = c(
+    'time', 
+    'distance', 
+    'latlng', 
+    'velocity_smooth',
+    'heartrate', 
+    'cadence'
+  ),
+  resolution = 'high',
+  series_type = 'time'
+)
+```
+
+```{r}
+lista_streams <- baixar_streams_diversas_atividades(
+  stoken,
+  ids = df_atividades %>% pull(id)
+)
+```
+
+Estourei o limite de 15 minutos.
+
+```{r}
+ultimo_id_lido <- '13743747084'
+vetor_ids <- df_atividades %>% pull(id)
+indice_proximo <- which(vetor_ids == ultimo_id_lido) + 1
+indice_proximo
+```
+
+```{r}
+ids_restantes <- 
+  vetor_ids[indice_proximo:length(vetor_ids)]
+ids_restantes
+```
+
+Baixando o resto:
+
+```{r}
+lista_streams <- baixar_streams_diversas_atividades(
+  stoken,
+  ids = ids_restantes
+)
+```
+
+```{r}
+lista_streams %>% str()
+```
+
+```{r}
+length(lista_streams)
+```
+
+```{r}
+lista_streams %>% str(max.level = 1)
+```
+

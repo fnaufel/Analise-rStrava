@@ -1,0 +1,255 @@
+---
+title: Experimentos com RStrava
+author: "Fernando Náufel"
+date: now
+date-format: "DD/MM/YYYY HH:mm"
+lang: pt
+execute: 
+  echo: true
+  eval: true
+  warning: true
+  error: true
+  include: true
+
+format:
+  html:
+    toc: true  
+    toc-depth: 3
+    number-depth: 3
+    theme: 
+      - journal
+      - _custom.scss
+    link-external-icon: true
+    link-external-newwindow: true
+    link-external-filter: ^(?:http:|https:)\/\/fnaufel\.github\.io
+    df-print: paged
+    code-link: true
+    code-copy: true
+    code-tools: true
+    self-contained: true
+---
+
+{{< include _math.qmd >}}
+
+```{r setup, include=FALSE}
+source('_setup.R')
+```
+
+
+# Autenticação
+
+```{r}
+library(rStrava)
+```
+
+Segundo <https://rviews.rstudio.com/2021/11/22/strava-data/>, melhor salvar id e secret no ambiente.
+
+```{r}
+app_name <- 'jneuer' # chosen by user
+# An integer, assigned by Strava:
+app_client_id  <- Sys.getenv("STRAVA_KEY")
+# an alphanumeric secret, assigned by Strava:
+app_secret <- Sys.getenv("STRAVA_SECRET")
+```
+
+Como no README, mas salvando no cache:
+
+```{r}
+if (!file.exists('.httr-oauth')) {
+  # create the authentication token (and cache it)
+  stoken <- httr::config(
+    token = strava_oauth(
+      app_name, 
+      app_client_id, 
+      app_secret, 
+      app_scope="activity:read_all",
+      cache = TRUE
+    )
+  )
+} else {
+  # Ler do cache
+  stoken <- httr::config(token = readRDS('.httr-oauth')[[1]])
+  cat('Token lida do cache.')
+}
+```
+
+
+# Informação do atleta
+
+Obtive o código no URL linkado ao nome em <https://www.strava.com/dashboard>:
+
+```{r}
+atleta <- '88717361'
+
+myinfo <- get_athlete(stoken, id = atleta)
+myinfo
+```
+
+- Resource state:
+
+  integer	Resource state, indicates level of detail. 
+  
+  Possible values: 1 -> "meta", 2 -> "summary", 3 -> "detail"
+
+
+# Lista de atividades
+
+Estes comandos obtêm a *lista* de atividades, mas não os streams:
+
+```{r}
+my_acts <- get_activity_list(stoken)
+my_acts[[1]]
+```
+
+```{r}
+df_acts <- compile_activities(my_acts) 
+df_acts
+```
+
+```{r}
+df_acts %>% dfSummary() %>% print(method = 'render')
+```
+
+
+# Streams
+
+## Para uma atividade
+
+rStrava docs say `types` is a list, but it must be a character vector!
+
+```{r}
+df_stream <- get_streams(
+  stoken,
+  '15104556239',
+  types = c(
+    'time',
+    'distance'
+  )
+)
+```
+
+```{r}
+df_stream %>% str(max.level = 2)
+```
+
+`data` is a list of lists!
+
+```{r}
+df_stream %>% 
+  pluck(1, 'data') %>% 
+  head()
+```
+
+Posso usar `map_dbl(1)` para remover um nível. Ou `unlist`. A vantagem de `map_dbl` é o tipo do vetor: `unlist` pode retornar um vetor de ints.
+
+```{r}
+df_stream %>% 
+  pluck(1, 'data') %>% 
+  map_dbl(1) %>% 
+#  unlist() %>% 
+  as_tibble_col('time')
+```
+
+Para transformar em colunas de uma tibble e concatená-las:
+
+```{r}
+df_stream %>% 
+  map(
+#    ~ unlist(.x$data) %>% as_tibble_col(column_name = .x$type)
+    ~ map_dbl(.x$data, 1) %>% as_tibble_col(column_name = .x$type)
+  ) %>% 
+  bind_cols()
+```
+
+## Para várias atividades
+
+Nem todas as atividades têm distância. Por isso, usando `series_type = 'time'`.
+
+Quando tento baixar todas as atividades, tenho erro de "too many requests".
+
+Vamos selecionar só as atividades de corrida:
+
+```{r}
+df_acts %>% 
+  count(type)
+```
+
+```{r}
+df_runs <- df_acts %>% 
+  filter(type == 'Run')
+```
+
+Examinar data:
+
+```{r}
+df_runs %>% 
+  filter(
+    start_date != start_date_local
+  ) %>% 
+  select(starts_with('start_d'))
+```
+
+Usar a coluna local, convertendo para data. Mas atenção: alguns fusos horários estão errados! Consertar e ordenar por data.
+
+```{r}
+df_runs <- df_runs %>% 
+  mutate(
+    start_date_local = as_datetime(start_date_local)
+  ) %>% 
+  mutate(
+    start_date_local =
+      case_when(
+        str_detect(timezone, 'America/Sao_Paulo$') 
+          ~ force_tz(start_date_local, 'America/Sao_Paulo'),
+        str_detect(timezone, 'GMT$') 
+          ~ with_tz(start_date_local, 'America/Sao_Paulo')
+      )
+  ) %>% 
+  mutate(
+    timezone = '(GMT-03:00) America/Sao_Paulo'
+  ) %>% 
+  arrange(start_date_local)
+```
+
+
+```{r}
+df_runs %>% write_csv('df_runs.csv')
+```
+
+::: {.callout-important title="Limites"}
+
+The default rate limit allows 200 requests every 15 minutes, with up to 2,000 requests per day.
+
+See <https://developers.strava.com/docs/rate-limits/>
+
+:::
+
+Função para baixar os streams de uma atividade e retornar como dataframe:
+
+```{r}
+montar_df_atividade <- function(
+  stoken,
+  id,
+  types = c(
+    'time', 
+    'distance', 
+    'latlng', 
+    'velocity_smooth',
+    'heartrate', 
+    'cadence'
+  ),
+) {
+  
+  lista <- get_streams(
+    stoken,
+    id,
+    types = types,
+    resolution = 'high',
+    series_type = 'time'
+  )
+  
+  # TODO: transformar lista em df
+  
+}
+```
+

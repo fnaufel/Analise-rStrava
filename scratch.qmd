@@ -1,0 +1,102 @@
+
+
+
+Como no README, mas salvando no cache:
+
+```{r}
+if (!file.exists('.httr-oauth')) {
+  # create the authentication token (and cache it)
+  stoken <- httr::config(
+    token = strava_oauth(
+      app_name, 
+      app_client_id, 
+      app_secret, 
+      app_scope="activity:read_all",
+      cache = TRUE
+    )
+  )
+} else {
+  # Ler do cache
+  stoken <- httr::config(token = readRDS('.httr-oauth')[[1]])
+  cat('Token lida do cache.')
+}
+```
+
+
+Fazer blocos de atividades:
+
+```{r}
+acts_per_block <- 10
+total_acts <- nrow(df_runs)
+n_blocks <- ceiling(total_acts / acts_per_block)
+blocks <- vector('list', n_blocks)
+b <- 1
+
+for(i in seq(1, total_acts, acts_per_block)) {
+  blocks[[b]] <- df_runs %>% 
+    slice(
+#      i:min((i + acts_per_block - 1), total_acts)
+      i:(i + acts_per_block - 1)
+    )
+  b <- b + 1
+}
+```
+
+```{r}
+blocks
+```
+
+
+Função para ler streams de um bloco de atividades:
+
+```{r}
+ler_bloco <- function(
+  df,
+  tamanho_bloco,
+  numero_bloco
+) {
+  
+  n <- nrow(df)
+  i <- 1 + (numero_bloco - 1) * tamanho_bloco
+  j <- i + tamanho_bloco
+  
+  df %>% 
+    get_activity_streams(
+      stoken,
+      acts = i:j,
+      resolution = 'high',
+      series_type = 'time'
+    )
+
+}
+```
+
+Ler streams de blocos de atividades, pausando vários minutos entre os blocos para não estourar o limite da API:
+
+```{r}
+tamanho_bloco <- 1
+n <- nrow(df_runs)
+n_blocos <- ceiling(n / tamanho_bloco)
+blocos <- vector('list', n_blocos)
+segundos_espera <- 15 * 60
+```
+
+```{r}
+for (i in 1:n_blocos) {
+  
+  blocos[[i]] <- ler_bloco(
+    df_runs,
+    tamanho_bloco,
+    i
+  )
+  
+  nome <- sprintf('bloco%03d.csv', i)
+  blocos[[i]] %>% 
+    write_csv(nome)
+  
+  # Wait 
+  Sys.sleep(segundos_espera)
+  
+}
+```
+
