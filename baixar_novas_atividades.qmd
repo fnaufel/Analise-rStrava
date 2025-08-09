@@ -1,0 +1,81 @@
+---
+title: Baixando novas atividades
+author: "Fernando Náufel"
+date: now
+date-format: "DD/MM/YYYY HH:mm"
+lang: pt
+execute: 
+  echo: true
+  eval: true
+  warning: true
+  error: true
+  include: true
+
+format:
+  html:
+    toc: true  
+    toc-depth: 3
+    number-depth: 3
+    theme: 
+      - journal
+      - _custom.scss
+    link-external-icon: true
+    link-external-newwindow: true
+    link-external-filter: ^(?:http:|https:)\/\/fnaufel\.github\.io
+    df-print: paged
+    code-link: true
+    code-copy: true
+    code-tools: true
+    self-contained: true
+---
+
+```{r setup, include=FALSE}
+source('_setup.R')
+library(rStrava)
+source('functions.R')
+```
+
+
+# Ler lista de atividades de arquivo (se houver)
+
+```{r}
+nome_dir <- 'Dados'
+nome_arquivo <- fs::path(nome_dir, 'atividades.csv')
+df <- ler_arquivo_atividades(nome_arquivo)
+```
+
+```{r}
+ultima <- df %>% 
+    data_ultima_atividade()
+
+ultima
+```
+
+
+# Baixar lista com novas atividades
+
+```{r}
+stoken <- autenticar()
+```
+
+```{r}
+df <- 
+  df %>% 
+  adicionar_atividades(stoken, after = ultima)
+```
+
+
+# Gravar lista de atividades em arquivo
+
+```{r}
+gravar_atividades(df, nome_arquivo)
+```
+
+
+# Baixar streams das novas atividades 
+
+```{r}
+df %>% 
+  baixar_streams_faltantes(stoken, dir = 'Dados')
+```
+

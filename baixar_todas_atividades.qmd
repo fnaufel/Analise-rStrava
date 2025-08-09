@@ -54,12 +54,9 @@ stoken <- autenticar()
 
 ```{r}
 #| eval: false
-df_novas_atividades <- 
-  baixar_atividades(stoken, after) %>% 
-  limpar_df_atividades()
-
-df_atividades <- df_atividades %>% 
-  bind_rows(df_novas_atividades)
+df_atividades <- 
+  df_atividades %>% 
+  adicionar_atividades(stoken, after)
 ```
 
 

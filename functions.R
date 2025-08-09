@@ -26,15 +26,6 @@ autenticar <- function() {
   
 }
 
-
-baixar_atividades <- function(stoken, after = NULL) {
-  
-  get_activity_list(stoken, after = after) %>% 
-    compile_activities() 
-  
-}
-
-
 limpar_df_atividades <- function(df, types = 'Run') {
   
   pt_br_locale <- locale(decimal_mark = ',', grouping_mark = '')
@@ -80,7 +71,7 @@ limpar_df_atividades <- function(df, types = 'Run') {
       upload_id = as.double(upload_id),
       upload_id_str = as.character(upload_id_str),
       utc_offset = as.double(utc_offset),
-      workout_type = parse_double(workout_type),
+  #    workout_type = parse_double(workout_type),
       average_cadence = as.double(average_cadence),
       suffer_score = as.double(suffer_score)
     ) %>% 
@@ -88,10 +79,11 @@ limpar_df_atividades <- function(df, types = 'Run') {
 
 }
 
-
 ler_arquivo_atividades <- function(nome_arquivo) {
   
   if (file.exists(nome_arquivo)) {
+    
+    message('Lendo ', nome_arquivo, '.')
     
     read_csv(
       nome_arquivo,
@@ -154,14 +146,15 @@ ler_arquivo_atividades <- function(nome_arquivo) {
     
   } else {
     
+    message(nome_arquivo, ' não achado.')
+    
     NULL
     
   }
   
 }
 
-
-data_hora_ultima_atividade <- function(df_atividades) {
+data_ultima_atividade <- function(df_atividades) {
   
   if (!is.null(df_atividades)) {
     
@@ -182,14 +175,12 @@ data_hora_ultima_atividade <- function(df_atividades) {
   
 }
 
-
 gravar_atividades <- function(df_atividades, nome_arquivo) {
   
   df_atividades %>% 
     write_csv(nome_arquivo)
   
 }
-
 
 baixar_streams_uma_atividade <- function(
   stoken,
@@ -241,7 +232,6 @@ baixar_streams_uma_atividade <- function(
 
 }
 
-
 baixar_streams_diversas_atividades <- function(
   stoken,
   ids,
@@ -269,3 +259,66 @@ baixar_streams_diversas_atividades <- function(
   }
   
 }
+
+adicionar_atividades <- function(
+  df,
+  stoken,
+  ids = NULL,
+  after = NULL
+) {
+  
+  if (is.null(after) & is.null(ids)) {
+    
+    after <- df %>% data_ultima_atividade()
+    
+  }
+  
+  df_novas <- get_activity_list(stoken, id = ids, after = after) 
+  
+  if (is_empty(df_novas)) {
+    
+    message('Nenhuma atividade a adicionar.')
+    
+  } else {
+  
+    df_novas <- df_novas %>% 
+      compile_activities() %>% 
+      limpar_df_atividades()
+
+    df <- df %>% 
+      bind_rows(df_novas) %>% 
+      arrange(start_date_local)
+  
+  }
+  
+  df
+  
+}
+
+baixar_streams_faltantes <- function(
+  df,
+  stoken,
+  dir = ''
+) {
+  
+  ids_df <- df %>% pull(id)
+  ids_baixados <- list.files(
+    dir,
+    pattern = '[0-9]+\\.csv'
+  ) %>% 
+    str_remove('\\.csv$')
+  
+  ids_a_baixar <- setdiff(ids_df, ids_baixados)
+  
+  if (is_empty(ids_a_baixar)) {
+    message('Nenhum stream faltante.')
+  } else {
+    
+    baixar_streams_diversas_atividades(
+      stoken,
+      ids_a_baixar
+    )
+  }    
+
+}
+
