@@ -1,0 +1,112 @@
+---
+title: Analisando uma corrida
+author: "Fernando Náufel"
+date: now
+date-format: "DD/MM/YYYY HH:mm"
+lang: pt
+execute: 
+  echo: true
+  eval: true
+  warning: true
+  error: true
+  include: true
+  cache: true
+
+format:
+  html:
+    toc: true  
+    toc-depth: 3
+    number-depth: 3
+    theme: 
+      - journal
+      - _custom.scss
+    link-external-icon: true
+    link-external-newwindow: true
+    link-external-filter: ^(?:http:|https:)\/\/fnaufel\.github\.io
+    df-print: paged
+    code-link: true
+    code-copy: true
+    code-tools: true
+    self-contained: true
+---
+
+```{r setup, include=FALSE}
+source('_setup.R')
+library(rStrava)
+source('functions.R')
+```
+
+
+# Apresentação
+
+O objetivo é entender os dados correspondentes a uma corrida. 
+
+- Como é calculada a velocidade?
+
+
+# Ler streams da atividade
+
+8km Icaraí com desaquecimento, em 25/07/2025.
+
+```{r}
+nome_dir <- 'Dados'
+nome_arquivo <- fs::path(nome_dir, '15242452054.csv')
+df <- read_csv(nome_arquivo)
+```
+
+```{r}
+nrow(df)
+```
+
+O Strava guarda a cadência como quantidade de *ciclos* por minuto. Vamos multiplicar por $2$ para obter *passos* por minuto:
+
+```{r}
+df <- df %>% 
+  mutate(cadence = cadence * 2)
+```
+
+
+## Sumário
+
+```{r}
+df %>% dfSummary() %>% print(method = 'render')
+```
+
+
+# EDA
+
+## Existem tempos repetidos?
+
+```{r}
+df %>% count(time, sort = TRUE) %>% filter(n > 1)
+```
+
+Não.
+
+
+## Existem distâncias repetidas?
+
+```{r}
+df %>% count(distance, sort = TRUE) %>% filter(n > 1)
+```
+
+Sim. 
+
+
+## Os tempos são regularmente espaçados?
+
+```{r}
+intervalos <- df %>% 
+  pull(time) %>% 
+  diff()
+
+head(intervalos, n = 100)
+
+tail(intervalos, n = 100)
+
+intervalos[intervalos != 1]
+
+intervalos %>% unique()
+```
+
+A maioria sim, mas não todos.
