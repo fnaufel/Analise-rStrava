@@ -1,0 +1,301 @@
+{
+  "configuration" : {
+    "scope" : "SoftwareSystem"
+  },
+  "description" : "An R package for analyzing data from my Strava",
+  "documentation" : {
+    "decisions" : [ {
+      "content" : "# 1. Record architecture decisions\n\nDate: 2025-09-19\n\n## Status\n\nAccepted\n\n## Context\n\nWe need to record the architectural decisions made on this project.\n\n## Decision\n\nWe will use Architecture Decision Records, as [described by Michael Nygard](http://thinkrelevance.com/blog/2011/11/15/documenting-architecture-decisions).\n\n## Consequences\n\nSee Michael Nygard's article, linked above. For a lightweight ADR toolset, see Nat Pryce's [adr-tools](https://github.com/npryce/adr-tools).\n",
+      "date" : "2025-09-19T00:00:00Z",
+      "format" : "Markdown",
+      "id" : "1",
+      "status" : "Accepted",
+      "title" : "Record architecture decisions"
+    }, {
+      "content" : "# 2. Use C4 diagrams\n\nDate: 2025-09-19\n\n## Status\n\nAccepted\n\n## Context\n\nI need to get used to using C4.\n\n## Decision\n\nDraw diagrams for my R package for analyzing my running data\ndownloaded from Strava.\n\n## Consequences\n\n- My programming style will become more organized, I hope.\n",
+      "date" : "2025-09-19T00:00:00Z",
+      "format" : "Markdown",
+      "id" : "2",
+      "status" : "Accepted",
+      "title" : "Use C4 diagrams"
+    }, {
+      "content" : "# 3. User interacts with system through a menu\n\nDate: 2025-09-19\n\n## Status\n\nAccepted\n\n## Context\n\nAlthough reports will be the main output of the system, we do not want\nthe user to have to open, edit and execute the qmd files.\n\n## Decision\n\nBase interaction on a main menu, possibly with submenus. Implement a\ncontroller for this.\n\n## Consequences\n\nIt becomes clearer what the actions are.\n",
+      "date" : "2025-09-19T00:00:00Z",
+      "format" : "Markdown",
+      "id" : "3",
+      "status" : "Accepted",
+      "title" : "User interacts with system through a menu"
+    }, {
+      "content" : "# 4. Use marimo for interactive reports\n\nDate: 2025-09-20\n\n## Status\n\nPending\n\n## Context\n\nI need to decide how to present information (tables, plots) to the user.\n\n## Decision\n\nUse marimo notebooks to show interactive plots. Or use quarto + marimo.\n\n## Consequences\n\nI will learn how to use marimo. \n",
+      "date" : "2025-09-20T00:00:00Z",
+      "format" : "Markdown",
+      "id" : "4",
+      "status" : "Pending",
+      "title" : "Use marimo for interactive reports"
+    } ]
+  },
+  "id" : 1,
+  "lastModifiedDate" : "2025-09-20T23:09:39Z",
+  "model" : {
+    "people" : [ {
+      "id" : "1",
+      "location" : "Unspecified",
+      "name" : "User",
+      "properties" : {
+        "structurizr.dsl.identifier" : "u"
+      },
+      "relationships" : [ {
+        "description" : "Interacts with",
+        "destinationId" : "4",
+        "id" : "15",
+        "sourceId" : "1",
+        "tags" : "Relationship"
+      }, {
+        "description" : "Interacts with",
+        "destinationId" : "3",
+        "id" : "16",
+        "linkedRelationshipId" : "15",
+        "sourceId" : "1"
+      } ],
+      "tags" : "Element,Person"
+    } ],
+    "softwareSystems" : [ {
+      "documentation" : { },
+      "id" : "2",
+      "location" : "Unspecified",
+      "name" : "Strava",
+      "properties" : {
+        "structurizr.dsl.identifier" : "strava"
+      },
+      "tags" : "Element,Software System"
+    }, {
+      "containers" : [ {
+        "documentation" : { },
+        "id" : "4",
+        "name" : "Front end",
+        "properties" : {
+          "structurizr.dsl.identifier" : "ss.frontend"
+        },
+        "relationships" : [ {
+          "description" : "sends commands to, receives results from",
+          "destinationId" : "6",
+          "id" : "14",
+          "sourceId" : "4",
+          "tags" : "Relationship"
+        } ],
+        "tags" : "Element,Container"
+      }, {
+        "documentation" : { },
+        "id" : "5",
+        "name" : "Local file system",
+        "properties" : {
+          "structurizr.dsl.identifier" : "ss.fs"
+        },
+        "tags" : "Element,Container,Database"
+      }, {
+        "documentation" : { },
+        "id" : "6",
+        "name" : "Controller",
+        "properties" : {
+          "structurizr.dsl.identifier" : "ss.controller"
+        },
+        "relationships" : [ {
+          "description" : "invokes, receives data from",
+          "destinationId" : "8",
+          "id" : "11",
+          "sourceId" : "6",
+          "tags" : "Relationship"
+        }, {
+          "description" : "sends data to, receives data from",
+          "destinationId" : "7",
+          "id" : "12",
+          "sourceId" : "6",
+          "tags" : "Relationship"
+        } ],
+        "tags" : "Element,Container"
+      }, {
+        "documentation" : { },
+        "id" : "7",
+        "name" : "Local data controller",
+        "properties" : {
+          "structurizr.dsl.identifier" : "ss.local_data_controller"
+        },
+        "relationships" : [ {
+          "description" : "reads from, writes to",
+          "destinationId" : "5",
+          "id" : "13",
+          "sourceId" : "7",
+          "tags" : "Relationship"
+        } ],
+        "tags" : "Element,Container"
+      }, {
+        "documentation" : { },
+        "id" : "8",
+        "name" : "Strava importer",
+        "properties" : {
+          "structurizr.dsl.identifier" : "ss.importer"
+        },
+        "relationships" : [ {
+          "description" : "calls, receives data from",
+          "destinationId" : "9",
+          "id" : "10",
+          "sourceId" : "8",
+          "tags" : "Relationship"
+        } ],
+        "tags" : "Element,Container"
+      }, {
+        "documentation" : { },
+        "id" : "9",
+        "name" : "RStrava R package",
+        "properties" : {
+          "structurizr.dsl.identifier" : "ss.rstrava"
+        },
+        "relationships" : [ {
+          "description" : "imports data from",
+          "destinationId" : "2",
+          "id" : "17",
+          "sourceId" : "9",
+          "tags" : "Relationship"
+        } ],
+        "tags" : "Element,Container"
+      } ],
+      "documentation" : { },
+      "id" : "3",
+      "location" : "Unspecified",
+      "name" : "RRunning",
+      "properties" : {
+        "structurizr.dsl.identifier" : "ss"
+      },
+      "relationships" : [ {
+        "description" : "imports data from",
+        "destinationId" : "2",
+        "id" : "18",
+        "linkedRelationshipId" : "17",
+        "sourceId" : "3"
+      } ],
+      "tags" : "Element,Software System"
+    } ]
+  },
+  "name" : "RRunning",
+  "properties" : {
+    "structurizr.dsl" : "d29ya3NwYWNlICJSUnVubmluZyIgIkFuIFIgcGFja2FnZSBmb3IgYW5hbHl6aW5nIGRhdGEgZnJvbSBteSBTdHJhdmEiIHsKCiAgICAhaWRlbnRpZmllcnMgaGllcmFyY2hpY2FsCiAgICAhYWRycyBhZHIKICAgICFkb2NzIGRvY3VtZW50YXRpb24KCiAgICBtb2RlbCB7CiAgICAgICAgdSA9IHBlcnNvbiAiVXNlciIKICAgICAgICBzdHJhdmEgPSBzb2Z0d2FyZVN5c3RlbSAiU3RyYXZhIgogICAgICAgIAogICAgICAgIHNzID0gc29mdHdhcmVTeXN0ZW0gIlJSdW5uaW5nIiB7CgogICAgICAgICAgZnJvbnRlbmQgPSBjb250YWluZXIgIkZyb250IGVuZCIKICAgICAgICAgIAogICAgICAgICAgZnMgPSBjb250YWluZXIgIkxvY2FsIGZpbGUgc3lzdGVtIiB7CiAgICAgICAgICAgIHRhZ3MgIkRhdGFiYXNlIgogICAgICAgICAgfQogICAgICAgICAgCiAgICAgICAgICBjb250cm9sbGVyID0gY29udGFpbmVyICJDb250cm9sbGVyIgoKICAgICAgICAgIGxvY2FsX2RhdGFfY29udHJvbGxlciA9IGNvbnRhaW5lciAiTG9jYWwgZGF0YSBjb250cm9sbGVyIgoKICAgICAgICAgIGltcG9ydGVyID0gY29udGFpbmVyICJTdHJhdmEgaW1wb3J0ZXIiCgogICAgICAgICAgcnN0cmF2YSA9IGNvbnRhaW5lciAiUlN0cmF2YSBSIHBhY2thZ2UiCgogICAgICAgICAgaW1wb3J0ZXIgLT4gcnN0cmF2YSAiY2FsbHMsIHJlY2VpdmVzIGRhdGEgZnJvbSIKICAgICAgICAgIGNvbnRyb2xsZXIgLT4gaW1wb3J0ZXIgImludm9rZXMsIHJlY2VpdmVzIGRhdGEgZnJvbSIKICAgICAgICAgIGNvbnRyb2xsZXIgLT4gbG9jYWxfZGF0YV9jb250cm9sbGVyICJzZW5kcyBkYXRhIHRvLCByZWNlaXZlcyBkYXRhIGZyb20iCiAgICAgICAgICBsb2NhbF9kYXRhX2NvbnRyb2xsZXIgLT4gZnMgInJlYWRzIGZyb20sIHdyaXRlcyB0byIKICAgICAgICAgIGZyb250ZW5kIC0+IGNvbnRyb2xsZXIgInNlbmRzIGNvbW1hbmRzIHRvLCByZWNlaXZlcyByZXN1bHRzIGZyb20iCiAgICAgICAgICAKICAgICAgICB9CiAgICAgICAgCiAgICAgICAgdSAtPiBzcy5mcm9udGVuZCAiSW50ZXJhY3RzIHdpdGgiCiAgICAgICAgc3MucnN0cmF2YSAtPiBzdHJhdmEgImltcG9ydHMgZGF0YSBmcm9tIgogICAgfQoKICAgIHZpZXdzIHsKICAgICAgICBzeXN0ZW1Db250ZXh0IHNzICJEaWFncmFtMSIgewogICAgICAgICAgICBpbmNsdWRlICoKICAgICAgICAgICAgLyogYXV0b2xheW91dCBsciAqLwogICAgICAgIH0KCiAgICAgICAgY29udGFpbmVyIHNzICJEaWFncmFtMiIgewogICAgICAgICAgICBpbmNsdWRlICoKICAgICAgICAgICAgLyogYXV0b2xheW91dCBsciAqLwogICAgICAgIH0KCiAgICAgICAgc3R5bGVzIHsKICAgICAgICAgICAgZWxlbWVudCAiRWxlbWVudCIgewogICAgICAgICAgICAgICAgY29sb3IgI2ZmZmZmZgogICAgICAgICAgICB9CiAgICAgICAgICAgIGVsZW1lbnQgIlBlcnNvbiIgewogICAgICAgICAgICAgICAgYmFja2dyb3VuZCAjYmExZTc1CiAgICAgICAgICAgICAgICBzaGFwZSBwZXJzb24KICAgICAgICAgICAgICAgIGZvbnRTaXplIDMwCiAgICAgICAgICAgIH0KICAgICAgICAgICAgZWxlbWVudCAiU29mdHdhcmUgU3lzdGVtIiB7CiAgICAgICAgICAgICAgICBiYWNrZ3JvdW5kICNkOTIzODkKICAgICAgICAgICAgICAgIGZvbnRTaXplIDMwCiAgICAgICAgICAgIH0KICAgICAgICAgICAgZWxlbWVudCAiQ29udGFpbmVyIiB7CiAgICAgICAgICAgICAgICBiYWNrZ3JvdW5kICNmODI4OWMKICAgICAgICAgICAgICAgIGZvbnRTaXplIDMwCiAgICAgICAgICAgIH0KICAgICAgICAgICAgZWxlbWVudCAiRGF0YWJhc2UiIHsKICAgICAgICAgICAgICAgIHNoYXBlIGN5bGluZGVyCiAgICAgICAgICAgICAgICBmb250U2l6ZSAzMAogICAgICAgICAgICB9CiAgICAgICAgfQogICAgfQoKICAgIGNvbmZpZ3VyYXRpb24gewogICAgICAgIHNjb3BlIHNvZnR3YXJlc3lzdGVtCiAgICB9Cgp9"
+  },
+  "views" : {
+    "configuration" : {
+      "branding" : { },
+      "lastSavedView" : "Diagram2",
+      "styles" : {
+        "elements" : [ {
+          "color" : "#ffffff",
+          "tag" : "Element"
+        }, {
+          "background" : "#ba1e75",
+          "fontSize" : 30,
+          "shape" : "Person",
+          "tag" : "Person"
+        }, {
+          "background" : "#d92389",
+          "fontSize" : 30,
+          "tag" : "Software System"
+        }, {
+          "background" : "#f8289c",
+          "fontSize" : 30,
+          "tag" : "Container"
+        }, {
+          "fontSize" : 30,
+          "shape" : "Cylinder",
+          "tag" : "Database"
+        } ]
+      },
+      "terminology" : { }
+    },
+    "containerViews" : [ {
+      "dimensions" : {
+        "height" : 1973,
+        "width" : 3508
+      },
+      "elements" : [ {
+        "id" : "1",
+        "x" : 445,
+        "y" : 110
+      }, {
+        "id" : "2",
+        "x" : 2660,
+        "y" : 185
+      }, {
+        "id" : "4",
+        "x" : 404,
+        "y" : 1108
+      }, {
+        "id" : "5",
+        "x" : 2654,
+        "y" : 1408
+      }, {
+        "id" : "6",
+        "x" : 1154,
+        "y" : 1108
+      }, {
+        "id" : "7",
+        "x" : 1904,
+        "y" : 1408
+      }, {
+        "id" : "8",
+        "x" : 1904,
+        "y" : 808
+      }, {
+        "id" : "9",
+        "x" : 2654,
+        "y" : 808
+      } ],
+      "externalSoftwareSystemBoundariesVisible" : false,
+      "key" : "Diagram2",
+      "order" : 2,
+      "paperSize" : "Slide_16_9",
+      "relationships" : [ {
+        "id" : "10"
+      }, {
+        "id" : "11"
+      }, {
+        "id" : "12"
+      }, {
+        "id" : "13"
+      }, {
+        "id" : "14"
+      }, {
+        "id" : "15"
+      }, {
+        "id" : "17"
+      } ],
+      "softwareSystemId" : "3"
+    } ],
+    "systemContextViews" : [ {
+      "dimensions" : {
+        "height" : 1973,
+        "width" : 3508
+      },
+      "elements" : [ {
+        "id" : "1",
+        "x" : 445,
+        "y" : 105
+      }, {
+        "id" : "2",
+        "x" : 2660,
+        "y" : 190
+      }, {
+        "id" : "3",
+        "x" : 1525,
+        "y" : 975
+      } ],
+      "enterpriseBoundaryVisible" : true,
+      "key" : "Diagram1",
+      "order" : 1,
+      "paperSize" : "Slide_16_9",
+      "relationships" : [ {
+        "id" : "16"
+      }, {
+        "id" : "18"
+      } ],
+      "softwareSystemId" : "3"
+    } ]
+  }
+}

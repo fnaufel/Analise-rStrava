@@ -1,6 +1,8 @@
 workspace "RRunning" "An R package for analyzing data from my Strava" {
 
     !identifiers hierarchical
+    !adrs adr
+    !docs documentation
 
     model {
         u = person "User"
