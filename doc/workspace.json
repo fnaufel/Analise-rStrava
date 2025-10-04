@@ -32,10 +32,29 @@
       "id" : "4",
       "status" : "Pending",
       "title" : "Use marimo for interactive reports"
+    } ],
+    "sections" : [ {
+      "content" : "## Contexto\n\n`RunneR` é um sistema que importa os dados das minhas atividades de\n[Strava](https://www.strava.com), mantém estes dados em arquivos\nlocais, e apresenta diversas análises sobre meu desempenho.\n\n![](embed:system_context)\n\n",
+      "filename" : "10-contexto.md",
+      "format" : "Markdown",
+      "order" : 1,
+      "title" : ""
+    }, {
+      "content" : "## Containers\n\n![](embed:container_diagram)\n\n",
+      "filename" : "15-containers.md",
+      "format" : "Markdown",
+      "order" : 2,
+      "title" : ""
+    }, {
+      "content" : "## Componentes\n\n![](embed:component_diagram)\n\n",
+      "filename" : "20-componentes.md",
+      "format" : "Markdown",
+      "order" : 3,
+      "title" : ""
     } ]
   },
   "id" : 1,
-  "lastModifiedDate" : "2025-09-20T23:09:39Z",
+  "lastModifiedDate" : "2025-10-03T23:56:07Z",
   "model" : {
     "people" : [ {
       "id" : "1",
@@ -46,15 +65,21 @@
       },
       "relationships" : [ {
         "description" : "Interacts with",
-        "destinationId" : "4",
-        "id" : "15",
+        "destinationId" : "7",
+        "id" : "18",
         "sourceId" : "1",
         "tags" : "Relationship"
       }, {
         "description" : "Interacts with",
+        "destinationId" : "6",
+        "id" : "19",
+        "linkedRelationshipId" : "18",
+        "sourceId" : "1"
+      }, {
+        "description" : "Interacts with",
         "destinationId" : "3",
-        "id" : "16",
-        "linkedRelationshipId" : "15",
+        "id" : "20",
+        "linkedRelationshipId" : "18",
         "sourceId" : "1"
       } ],
       "tags" : "Element,Person"
@@ -72,21 +97,6 @@
       "containers" : [ {
         "documentation" : { },
         "id" : "4",
-        "name" : "Front end",
-        "properties" : {
-          "structurizr.dsl.identifier" : "ss.frontend"
-        },
-        "relationships" : [ {
-          "description" : "sends commands to, receives results from",
-          "destinationId" : "6",
-          "id" : "14",
-          "sourceId" : "4",
-          "tags" : "Relationship"
-        } ],
-        "tags" : "Element,Container"
-      }, {
-        "documentation" : { },
-        "id" : "5",
         "name" : "Local file system",
         "properties" : {
           "structurizr.dsl.identifier" : "ss.fs"
@@ -94,58 +104,7 @@
         "tags" : "Element,Container,Database"
       }, {
         "documentation" : { },
-        "id" : "6",
-        "name" : "Controller",
-        "properties" : {
-          "structurizr.dsl.identifier" : "ss.controller"
-        },
-        "relationships" : [ {
-          "description" : "invokes, receives data from",
-          "destinationId" : "8",
-          "id" : "11",
-          "sourceId" : "6",
-          "tags" : "Relationship"
-        }, {
-          "description" : "sends data to, receives data from",
-          "destinationId" : "7",
-          "id" : "12",
-          "sourceId" : "6",
-          "tags" : "Relationship"
-        } ],
-        "tags" : "Element,Container"
-      }, {
-        "documentation" : { },
-        "id" : "7",
-        "name" : "Local data controller",
-        "properties" : {
-          "structurizr.dsl.identifier" : "ss.local_data_controller"
-        },
-        "relationships" : [ {
-          "description" : "reads from, writes to",
-          "destinationId" : "5",
-          "id" : "13",
-          "sourceId" : "7",
-          "tags" : "Relationship"
-        } ],
-        "tags" : "Element,Container"
-      }, {
-        "documentation" : { },
-        "id" : "8",
-        "name" : "Strava importer",
-        "properties" : {
-          "structurizr.dsl.identifier" : "ss.importer"
-        },
-        "relationships" : [ {
-          "description" : "calls, receives data from",
-          "destinationId" : "9",
-          "id" : "10",
-          "sourceId" : "8",
-          "tags" : "Relationship"
-        } ],
-        "tags" : "Element,Container"
-      }, {
-        "documentation" : { },
-        "id" : "9",
+        "id" : "5",
         "name" : "RStrava R package",
         "properties" : {
           "structurizr.dsl.identifier" : "ss.rstrava"
@@ -153,43 +112,184 @@
         "relationships" : [ {
           "description" : "imports data from",
           "destinationId" : "2",
-          "id" : "17",
-          "sourceId" : "9",
+          "id" : "21",
+          "sourceId" : "5",
           "tags" : "Relationship"
+        } ],
+        "tags" : "Element,Container"
+      }, {
+        "components" : [ {
+          "documentation" : { },
+          "id" : "7",
+          "name" : "Front end",
+          "properties" : {
+            "structurizr.dsl.identifier" : "ss.runner.front_end"
+          },
+          "relationships" : [ {
+            "description" : "sends commands to, receives results from",
+            "destinationId" : "8",
+            "id" : "17",
+            "sourceId" : "7",
+            "tags" : "Relationship"
+          } ],
+          "tags" : "Element,Component"
+        }, {
+          "documentation" : { },
+          "id" : "8",
+          "name" : "Main controller",
+          "properties" : {
+            "structurizr.dsl.identifier" : "ss.runner.main_controller"
+          },
+          "relationships" : [ {
+            "description" : "invokes, receives data from",
+            "destinationId" : "10",
+            "id" : "13",
+            "sourceId" : "8",
+            "tags" : "Relationship"
+          }, {
+            "description" : "sends data to, receives data from",
+            "destinationId" : "9",
+            "id" : "14",
+            "sourceId" : "8",
+            "tags" : "Relationship"
+          } ],
+          "tags" : "Element,Component"
+        }, {
+          "documentation" : { },
+          "id" : "9",
+          "name" : "Local data controller",
+          "properties" : {
+            "structurizr.dsl.identifier" : "ss.runner.local_data_controller"
+          },
+          "relationships" : [ {
+            "description" : "reads from, writes to",
+            "destinationId" : "4",
+            "id" : "15",
+            "sourceId" : "9",
+            "tags" : "Relationship"
+          } ],
+          "tags" : "Element,Component"
+        }, {
+          "documentation" : { },
+          "id" : "10",
+          "name" : "Strava importer",
+          "properties" : {
+            "structurizr.dsl.identifier" : "ss.runner.importer"
+          },
+          "relationships" : [ {
+            "description" : "calls, receives data from",
+            "destinationId" : "5",
+            "id" : "11",
+            "sourceId" : "10",
+            "tags" : "Relationship"
+          } ],
+          "tags" : "Element,Component"
+        } ],
+        "documentation" : { },
+        "id" : "6",
+        "name" : "RunneR",
+        "properties" : {
+          "structurizr.dsl.identifier" : "ss.runner"
+        },
+        "relationships" : [ {
+          "description" : "calls, receives data from",
+          "destinationId" : "5",
+          "id" : "12",
+          "linkedRelationshipId" : "11",
+          "sourceId" : "6"
+        }, {
+          "description" : "reads from, writes to",
+          "destinationId" : "4",
+          "id" : "16",
+          "linkedRelationshipId" : "15",
+          "sourceId" : "6"
         } ],
         "tags" : "Element,Container"
       } ],
       "documentation" : { },
       "id" : "3",
       "location" : "Unspecified",
-      "name" : "RRunning",
+      "name" : "RunneR System",
       "properties" : {
         "structurizr.dsl.identifier" : "ss"
       },
       "relationships" : [ {
         "description" : "imports data from",
         "destinationId" : "2",
-        "id" : "18",
-        "linkedRelationshipId" : "17",
+        "id" : "22",
+        "linkedRelationshipId" : "21",
         "sourceId" : "3"
       } ],
       "tags" : "Element,Software System"
     } ]
   },
-  "name" : "RRunning",
+  "name" : "RunneR",
   "properties" : {
-    "structurizr.dsl" : "d29ya3NwYWNlICJSUnVubmluZyIgIkFuIFIgcGFja2FnZSBmb3IgYW5hbHl6aW5nIGRhdGEgZnJvbSBteSBTdHJhdmEiIHsKCiAgICAhaWRlbnRpZmllcnMgaGllcmFyY2hpY2FsCiAgICAhYWRycyBhZHIKICAgICFkb2NzIGRvY3VtZW50YXRpb24KCiAgICBtb2RlbCB7CiAgICAgICAgdSA9IHBlcnNvbiAiVXNlciIKICAgICAgICBzdHJhdmEgPSBzb2Z0d2FyZVN5c3RlbSAiU3RyYXZhIgogICAgICAgIAogICAgICAgIHNzID0gc29mdHdhcmVTeXN0ZW0gIlJSdW5uaW5nIiB7CgogICAgICAgICAgZnJvbnRlbmQgPSBjb250YWluZXIgIkZyb250IGVuZCIKICAgICAgICAgIAogICAgICAgICAgZnMgPSBjb250YWluZXIgIkxvY2FsIGZpbGUgc3lzdGVtIiB7CiAgICAgICAgICAgIHRhZ3MgIkRhdGFiYXNlIgogICAgICAgICAgfQogICAgICAgICAgCiAgICAgICAgICBjb250cm9sbGVyID0gY29udGFpbmVyICJDb250cm9sbGVyIgoKICAgICAgICAgIGxvY2FsX2RhdGFfY29udHJvbGxlciA9IGNvbnRhaW5lciAiTG9jYWwgZGF0YSBjb250cm9sbGVyIgoKICAgICAgICAgIGltcG9ydGVyID0gY29udGFpbmVyICJTdHJhdmEgaW1wb3J0ZXIiCgogICAgICAgICAgcnN0cmF2YSA9IGNvbnRhaW5lciAiUlN0cmF2YSBSIHBhY2thZ2UiCgogICAgICAgICAgaW1wb3J0ZXIgLT4gcnN0cmF2YSAiY2FsbHMsIHJlY2VpdmVzIGRhdGEgZnJvbSIKICAgICAgICAgIGNvbnRyb2xsZXIgLT4gaW1wb3J0ZXIgImludm9rZXMsIHJlY2VpdmVzIGRhdGEgZnJvbSIKICAgICAgICAgIGNvbnRyb2xsZXIgLT4gbG9jYWxfZGF0YV9jb250cm9sbGVyICJzZW5kcyBkYXRhIHRvLCByZWNlaXZlcyBkYXRhIGZyb20iCiAgICAgICAgICBsb2NhbF9kYXRhX2NvbnRyb2xsZXIgLT4gZnMgInJlYWRzIGZyb20sIHdyaXRlcyB0byIKICAgICAgICAgIGZyb250ZW5kIC0+IGNvbnRyb2xsZXIgInNlbmRzIGNvbW1hbmRzIHRvLCByZWNlaXZlcyByZXN1bHRzIGZyb20iCiAgICAgICAgICAKICAgICAgICB9CiAgICAgICAgCiAgICAgICAgdSAtPiBzcy5mcm9udGVuZCAiSW50ZXJhY3RzIHdpdGgiCiAgICAgICAgc3MucnN0cmF2YSAtPiBzdHJhdmEgImltcG9ydHMgZGF0YSBmcm9tIgogICAgfQoKICAgIHZpZXdzIHsKICAgICAgICBzeXN0ZW1Db250ZXh0IHNzICJEaWFncmFtMSIgewogICAgICAgICAgICBpbmNsdWRlICoKICAgICAgICAgICAgLyogYXV0b2xheW91dCBsciAqLwogICAgICAgIH0KCiAgICAgICAgY29udGFpbmVyIHNzICJEaWFncmFtMiIgewogICAgICAgICAgICBpbmNsdWRlICoKICAgICAgICAgICAgLyogYXV0b2xheW91dCBsciAqLwogICAgICAgIH0KCiAgICAgICAgc3R5bGVzIHsKICAgICAgICAgICAgZWxlbWVudCAiRWxlbWVudCIgewogICAgICAgICAgICAgICAgY29sb3IgI2ZmZmZmZgogICAgICAgICAgICB9CiAgICAgICAgICAgIGVsZW1lbnQgIlBlcnNvbiIgewogICAgICAgICAgICAgICAgYmFja2dyb3VuZCAjYmExZTc1CiAgICAgICAgICAgICAgICBzaGFwZSBwZXJzb24KICAgICAgICAgICAgICAgIGZvbnRTaXplIDMwCiAgICAgICAgICAgIH0KICAgICAgICAgICAgZWxlbWVudCAiU29mdHdhcmUgU3lzdGVtIiB7CiAgICAgICAgICAgICAgICBiYWNrZ3JvdW5kICNkOTIzODkKICAgICAgICAgICAgICAgIGZvbnRTaXplIDMwCiAgICAgICAgICAgIH0KICAgICAgICAgICAgZWxlbWVudCAiQ29udGFpbmVyIiB7CiAgICAgICAgICAgICAgICBiYWNrZ3JvdW5kICNmODI4OWMKICAgICAgICAgICAgICAgIGZvbnRTaXplIDMwCiAgICAgICAgICAgIH0KICAgICAgICAgICAgZWxlbWVudCAiRGF0YWJhc2UiIHsKICAgICAgICAgICAgICAgIHNoYXBlIGN5bGluZGVyCiAgICAgICAgICAgICAgICBmb250U2l6ZSAzMAogICAgICAgICAgICB9CiAgICAgICAgfQogICAgfQoKICAgIGNvbmZpZ3VyYXRpb24gewogICAgICAgIHNjb3BlIHNvZnR3YXJlc3lzdGVtCiAgICB9Cgp9"
+    "structurizr.dsl" : "d29ya3NwYWNlICJSdW5uZVIiICJBbiBSIHBhY2thZ2UgZm9yIGFuYWx5emluZyBkYXRhIGZyb20gbXkgU3RyYXZhIiB7CgogICAgIWlkZW50aWZpZXJzIGhpZXJhcmNoaWNhbAogICAgIWFkcnMgYWRyCiAgICAhZG9jcyBkb2N1bWVudGF0aW9uCgogICAgbW9kZWwgewogICAgICAgIHUgPSBwZXJzb24gIlVzZXIiCiAgICAgICAgc3RyYXZhID0gc29mdHdhcmVTeXN0ZW0gIlN0cmF2YSIKICAgICAgICAKICAgICAgICBzcyA9IHNvZnR3YXJlU3lzdGVtICJSdW5uZVIgU3lzdGVtIiB7CgogICAgICAgICAgZnMgPSBjb250YWluZXIgIkxvY2FsIGZpbGUgc3lzdGVtIiB7CiAgICAgICAgICAgIHRhZ3MgIkRhdGFiYXNlIgogICAgICAgICAgfQogICAgICAgICAgCiAgICAgICAgICByc3RyYXZhID0gY29udGFpbmVyICJSU3RyYXZhIFIgcGFja2FnZSIKICAgICAgICAgIAogICAgICAgICAgcnVubmVyID0gY29udGFpbmVyICJSdW5uZVIiIHsKICAgICAgICAgICAgZnJvbnRfZW5kID0gY29tcG9uZW50ICJGcm9udCBlbmQiCiAgICAgICAgICAgIG1haW5fY29udHJvbGxlciA9IGNvbXBvbmVudCAiTWFpbiBjb250cm9sbGVyIgogICAgICAgICAgICBsb2NhbF9kYXRhX2NvbnRyb2xsZXIgPSBjb21wb25lbnQgIkxvY2FsIGRhdGEgY29udHJvbGxlciIKICAgICAgICAgICAgaW1wb3J0ZXIgPSBjb21wb25lbnQgIlN0cmF2YSBpbXBvcnRlciIKCiAgICAgICAgICAgIGltcG9ydGVyIC0+IHJzdHJhdmEgImNhbGxzLCByZWNlaXZlcyBkYXRhIGZyb20iCiAgICAgICAgICAgIG1haW5fY29udHJvbGxlciAtPiBpbXBvcnRlciAiaW52b2tlcywgcmVjZWl2ZXMgZGF0YSBmcm9tIgogICAgICAgICAgICBtYWluX2NvbnRyb2xsZXIgLT4gbG9jYWxfZGF0YV9jb250cm9sbGVyICJzZW5kcyBkYXRhIHRvLCByZWNlaXZlcyBkYXRhIGZyb20iCiAgICAgICAgICAgIGxvY2FsX2RhdGFfY29udHJvbGxlciAtPiBmcyAicmVhZHMgZnJvbSwgd3JpdGVzIHRvIgogICAgICAgICAgICBmcm9udF9lbmQgLT4gbWFpbl9jb250cm9sbGVyICJzZW5kcyBjb21tYW5kcyB0bywgcmVjZWl2ZXMgcmVzdWx0cyBmcm9tIgogICAgICAgICAgICAKICAgICAgICAgIH0KICAgICAgICAgIAogICAgICAgIH0KICAgICAgICAKICAgICAgICB1IC0+IHNzLnJ1bm5lci5mcm9udF9lbmQgIkludGVyYWN0cyB3aXRoIgogICAgICAgIHNzLnJzdHJhdmEgLT4gc3RyYXZhICJpbXBvcnRzIGRhdGEgZnJvbSIKCiAgICB9CgogICAgdmlld3MgewogICAgICAgIHN5c3RlbUNvbnRleHQgc3MgInN5c3RlbV9jb250ZXh0IiB7CiAgICAgICAgICAgIGluY2x1ZGUgKgogICAgICAgICAgICAvKiBhdXRvbGF5b3V0IGxyICovCiAgICAgICAgfQoKICAgICAgICBjb250YWluZXIgc3MgImNvbnRhaW5lcl9kaWFncmFtIiB7CiAgICAgICAgICAgIGluY2x1ZGUgKgogICAgICAgICAgICAvKiBhdXRvbGF5b3V0IGxyICovCiAgICAgICAgfQoKICAgICAgICBjb21wb25lbnQgc3MucnVubmVyICJjb21wb25lbnRfZGlhZ3JhbSIgewogICAgICAgICAgaW5jbHVkZSAqCiAgICAgICAgfQoKICAgICAgICBzdHlsZXMgewogICAgICAgICAgICBlbGVtZW50ICJFbGVtZW50IiB7CiAgICAgICAgICAgICAgICBjb2xvciAjZmZmZmZmCiAgICAgICAgICAgIH0KICAgICAgICAgICAgZWxlbWVudCAiUGVyc29uIiB7CiAgICAgICAgICAgICAgICBiYWNrZ3JvdW5kICNjYTJlODUKICAgICAgICAgICAgICAgIHNoYXBlIHBlcnNvbgogICAgICAgICAgICAgICAgZm9udFNpemUgMzAKICAgICAgICAgICAgfQogICAgICAgICAgICBlbGVtZW50ICJTb2Z0d2FyZSBTeXN0ZW0iIHsKICAgICAgICAgICAgICAgIGJhY2tncm91bmQgI2Q5MjM4OQogICAgICAgICAgICAgICAgZm9udFNpemUgMzAKICAgICAgICAgICAgfQogICAgICAgICAgICBlbGVtZW50ICJDb250YWluZXIiIHsKICAgICAgICAgICAgICAgIGJhY2tncm91bmQgI2Y4Mjg5YwogICAgICAgICAgICAgICAgZm9udFNpemUgMzAKICAgICAgICAgICAgfQogICAgICAgICAgICBlbGVtZW50ICJDb21wb25lbnQiIHsKICAgICAgICAgICAgICAgIGJhY2tncm91bmQgI2Q4MDg3YwogICAgICAgICAgICAgICAgZm9udFNpemUgMzAKICAgICAgICAgICAgfQogICAgICAgICAgICBlbGVtZW50ICJEYXRhYmFzZSIgewogICAgICAgICAgICAgICAgc2hhcGUgY3lsaW5kZXIKICAgICAgICAgICAgICAgIGZvbnRTaXplIDMwCiAgICAgICAgICAgIH0KICAgICAgICB9CiAgICB9CgogICAgY29uZmlndXJhdGlvbiB7CiAgICAgICAgc2NvcGUgc29mdHdhcmVzeXN0ZW0KICAgIH0KCn0="
   },
   "views" : {
+    "componentViews" : [ {
+      "containerId" : "6",
+      "dimensions" : {
+        "height" : 1973,
+        "width" : 3508
+      },
+      "elements" : [ {
+        "id" : "1",
+        "x" : 269,
+        "y" : 199
+      }, {
+        "id" : "4",
+        "x" : 2789,
+        "y" : 1404
+      }, {
+        "id" : "5",
+        "x" : 2784,
+        "y" : 229
+      }, {
+        "id" : "7",
+        "x" : 1148,
+        "y" : 250
+      }, {
+        "id" : "8",
+        "x" : 1153,
+        "y" : 790
+      }, {
+        "id" : "9",
+        "x" : 1943,
+        "y" : 785
+      }, {
+        "id" : "10",
+        "x" : 1948,
+        "y" : 260
+      } ],
+      "externalContainerBoundariesVisible" : false,
+      "key" : "component_diagram",
+      "order" : 3,
+      "paperSize" : "Slide_16_9",
+      "relationships" : [ {
+        "id" : "11"
+      }, {
+        "id" : "13"
+      }, {
+        "id" : "14"
+      }, {
+        "id" : "15"
+      }, {
+        "id" : "17"
+      }, {
+        "id" : "18"
+      } ]
+    } ],
     "configuration" : {
       "branding" : { },
-      "lastSavedView" : "Diagram2",
+      "lastSavedView" : "container_diagram",
       "styles" : {
         "elements" : [ {
           "color" : "#ffffff",
           "tag" : "Element"
         }, {
-          "background" : "#ba1e75",
+          "background" : "#ca2e85",
           "fontSize" : 30,
           "shape" : "Person",
           "tag" : "Person"
@@ -201,6 +301,10 @@
           "background" : "#f8289c",
           "fontSize" : 30,
           "tag" : "Container"
+        }, {
+          "background" : "#d8087c",
+          "fontSize" : 30,
+          "tag" : "Component"
         }, {
           "fontSize" : 30,
           "shape" : "Cylinder",
@@ -216,55 +320,37 @@
       },
       "elements" : [ {
         "id" : "1",
-        "x" : 445,
-        "y" : 110
+        "x" : 187,
+        "y" : 208
       }, {
         "id" : "2",
-        "x" : 2660,
-        "y" : 185
+        "x" : 2870,
+        "y" : 250
       }, {
         "id" : "4",
-        "x" : 404,
-        "y" : 1108
+        "x" : 2052,
+        "y" : 1303
       }, {
         "id" : "5",
-        "x" : 2654,
-        "y" : 1408
+        "x" : 2055,
+        "y" : 250
       }, {
         "id" : "6",
-        "x" : 1154,
-        "y" : 1108
-      }, {
-        "id" : "7",
-        "x" : 1904,
-        "y" : 1408
-      }, {
-        "id" : "8",
-        "x" : 1904,
-        "y" : 808
-      }, {
-        "id" : "9",
-        "x" : 2654,
-        "y" : 808
+        "x" : 1082,
+        "y" : 253
       } ],
       "externalSoftwareSystemBoundariesVisible" : false,
-      "key" : "Diagram2",
+      "key" : "container_diagram",
       "order" : 2,
       "paperSize" : "Slide_16_9",
       "relationships" : [ {
-        "id" : "10"
-      }, {
-        "id" : "11"
-      }, {
         "id" : "12"
       }, {
-        "id" : "13"
+        "id" : "16"
       }, {
-        "id" : "14"
+        "id" : "19"
       }, {
-        "id" : "15"
-      }, {
-        "id" : "17"
+        "id" : "21"
       } ],
       "softwareSystemId" : "3"
     } ],
@@ -275,25 +361,25 @@
       },
       "elements" : [ {
         "id" : "1",
-        "x" : 445,
-        "y" : 105
+        "x" : 369,
+        "y" : 751
       }, {
         "id" : "2",
-        "x" : 2660,
-        "y" : 190
+        "x" : 2689,
+        "y" : 801
       }, {
         "id" : "3",
-        "x" : 1525,
-        "y" : 975
+        "x" : 1489,
+        "y" : 801
       } ],
       "enterpriseBoundaryVisible" : true,
-      "key" : "Diagram1",
+      "key" : "system_context",
       "order" : 1,
       "paperSize" : "Slide_16_9",
       "relationships" : [ {
-        "id" : "16"
+        "id" : "20"
       }, {
-        "id" : "18"
+        "id" : "22"
       } ],
       "softwareSystemId" : "3"
     } ]
